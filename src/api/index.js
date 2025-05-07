@@ -90,4 +90,5 @@ export const Settings = {
   auraWolf: "",
   language: "",
   otpless: "",
+  lobby: "",
 };
