@@ -97,7 +97,7 @@ const BetSlip = ({
                 h-16 lg:h-20  
                 bg-gradient-to-t from-green/50 to-green/70
                ${
-                 winCard?.winner === Winner.B && isAnimationEnd
+                 winCard?.winner === Winner.A && isAnimationEnd
                    ? "border-stakeGreen text-stakeGreen"
                    : "border-white/30 text-white/50"
                }`}
@@ -128,7 +128,11 @@ const BetSlip = ({
         className={`relative flex  border w-full items-center rounded justify-center aspect-square 
                 row-span-2 h-full 
                 bg-gradient-to-t from-white/5 to-white/10
-            border-white/10 text-white/50`}
+             ${
+               winCard?.winner_colorplus && isAnimationEnd
+                 ? "border-stakeGreen text-stakeGreen"
+                 : "border-white/30 text-white/50"
+             }`}
         style={{ pointerEvents: "auto" }}
       >
         <span className="absolute font-medium  -translate-y-1/2 top-1/2  text-center lg:text-lg  ">
@@ -137,43 +141,78 @@ const BetSlip = ({
         <div className="absolute bottom-0  w-full rounded-b-sm overflow-clip flex flex-wrap justify-center flex-row-reverse  items-center gap-[1px] text-[9px] text-black">
           <span
             className="flex-grow px-1 font-mono font-medium text-center "
-            style={{ backgroundColor: "rgba(128, 128, 128, 0.5)" }}
+            style={{
+              backgroundColor:
+                winCard?.winner_colorplus === 9 && isAnimationEnd
+                  ? "rgb(0, 184, 231)"
+                  : "rgba(128, 128, 128, 0.5)",
+            }}
           >
             x9
           </span>
           <span
             className="flex-grow px-1 font-mono font-medium text-center "
-            style={{ backgroundColor: "rgba(128, 128, 128, 0.5)" }}
+            style={{
+              backgroundColor:
+                winCard?.winner_colorplus === 3 && isAnimationEnd
+                  ? "rgb(0, 184, 231)"
+                  : "rgba(128, 128, 128, 0.5)",
+            }}
           >
             x3
           </span>
           <span
             className="flex-grow px-1 font-mono font-medium text-center "
-            style={{ backgroundColor: "rgba(128, 128, 128, 0.5)" }}
+            style={{
+              backgroundColor:
+                winCard?.winner_colorplus === 9 && isAnimationEnd
+                  ? "rgb(0, 184, 231)"
+                  : "rgba(128, 128, 128, 0.5)",
+            }}
           >
             x9
           </span>
           <span
             className="flex-grow px-1 font-mono font-medium text-center "
-            style={{ backgroundColor: "rgba(128, 128, 128, 0.5)" }}
+            style={{
+              backgroundColor:
+                winCard?.winner_colorplus === 12 && isAnimationEnd
+                  ? "rgb(0, 184, 231)"
+                  : "rgba(128, 128, 128, 0.5)",
+            }}
           >
             x12
           </span>
           <span
             className="flex-grow px-1 font-mono font-medium text-center "
-            style={{ backgroundColor: "rgba(128, 128, 128, 0.5)" }}
+            style={{
+              backgroundColor:
+                winCard?.winner_colorplus === 15 && isAnimationEnd
+                  ? "rgb(0, 184, 231)"
+                  : "rgba(128, 128, 128, 0.5)",
+            }}
           >
             x15
           </span>
           <span
             className="flex-grow px-1 font-mono font-medium text-center "
-            style={{ backgroundColor: "rgba(128, 128, 128, 0.5)" }}
+            style={{
+              backgroundColor:
+                winCard?.winner_colorplus === 50 && isAnimationEnd
+                  ? "rgb(0, 184, 231)"
+                  : "rgba(128, 128, 128, 0.5)",
+            }}
           >
             x150
           </span>
           <span
             className="flex-grow px-1 font-mono font-medium text-center "
-            style={{ backgroundColor: "rgba(128, 128, 128, 0.5)" }}
+            style={{
+              backgroundColor:
+                winCard?.winner_colorplus === 200 && isAnimationEnd
+                  ? "rgb(0, 184, 231)"
+                  : "rgba(128, 128, 128, 0.5)",
+            }}
           >
             x200
           </span>
@@ -194,10 +233,14 @@ const BetSlip = ({
             price: 1.98,
           })
         }
-        className="relative flex  border w-full items-center rounded justify-center aspect-square 
+        className={`relative flex  border w-full items-center rounded justify-center aspect-square 
                 h-16 lg:h-20  
                 bg-gradient-to-t from-blue/50 to-blue/70
-            border-white/10 text-white/50 "
+              ${
+                winCard?.winner === Winner.B && isAnimationEnd
+                  ? "border-stakeGreen text-stakeGreen"
+                  : "border-white/30 text-white/50"
+              }`}
         style={{ pointerEvents: "auto" }}
       >
         <span className="absolute font-medium  -translate-y-1/2 top-1/2  text-center lg:text-lg  ">
@@ -222,10 +265,14 @@ const BetSlip = ({
             price: 2.05,
           })
         }
-        className="relative flex  border w-full items-center rounded justify-center aspect-square 
+        className={`relative flex  border w-full items-center rounded justify-center aspect-square 
                 h-16 lg:h-20  
                 bg-gradient-to-t from-white/5 to-white/10
-            border-white/10 text-white/50 "
+             ${
+               winCard?.winner_baccarat === Winner.A && isAnimationEnd
+                 ? "border-stakeGreen text-stakeGreen"
+                 : "border-white/30 text-white/50"
+             }`}
         style={{ pointerEvents: "auto" }}
       >
         <span className="absolute font-medium  -translate-y-1/2 top-1/2  text-center lg:text-lg  ">
@@ -250,10 +297,14 @@ const BetSlip = ({
             price: 2.05,
           })
         }
-        className="relative flex  border w-full items-center rounded justify-center aspect-square 
+        className={`relative flex  border w-full items-center rounded justify-center aspect-square 
                 h-16 lg:h-20  
                 bg-gradient-to-t from-white/5 to-white/10
-            border-white/10 text-white/50 "
+            ${
+              winCard?.winner_baccarat === Winner.B && isAnimationEnd
+                ? "border-stakeGreen text-stakeGreen"
+                : "border-white/30 text-white/50"
+            }`}
         style={{ pointerEvents: "auto" }}
       >
         <span className="absolute font-medium  -translate-y-1/2 top-1/2  text-center lg:text-lg  ">

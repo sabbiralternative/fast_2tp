@@ -1,18 +1,19 @@
 import { Winner } from "../const";
 
-const ABPLUS = [
-  { key: "WINNER", amount: 1.98 },
-  { key: "COLOR", amount: 5 },
-  { key: "TRIO", amount: 26 },
-  { key: "PAIR", amount: 2 },
-  { key: "STRAIGHT", amount: 7 },
-  { key: "STRAIGHTFLUSH", amount: 36 },
+const colorPlus = [
+  { amount: 15 },
+  { amount: 12 },
+  { amount: 9 },
+  { amount: 3 },
+  { amount: 9 },
+  { amount: 200 },
+  { amount: 150 },
 ];
 
 export const calculateTotalWin = (
   winner,
-  winner_aplus,
-  winner_bplus,
+  winner_baccarat,
+  winner_colorplus,
   payload
 ) => {
   let totalWin = 0;
@@ -29,18 +30,19 @@ export const calculateTotalWin = (
       totalWin += b?.price * b?.stake;
     }
   }
-  if (winner_aplus) {
-    const findAPlusPrice = ABPLUS?.find((a) => a.key === winner_aplus);
-    const aPlus = payload?.find((p) => p.runner_name === "APLUS");
-    if (findAPlusPrice && aPlus) {
-      totalWin += findAPlusPrice?.amount * aPlus?.stake;
+  if (winner_baccarat) {
+    const w_b = payload?.find((p) => p.runner_name === winner_baccarat);
+    if (w_b) {
+      totalWin += w_b?.price * w_b?.stake;
     }
   }
-  if (winner_bplus) {
-    const findBPlusPrice = ABPLUS?.find((a) => a.key === winner_bplus);
-    const bPlus = payload?.find((p) => p.runner_name === "BPLUS");
-    if (findBPlusPrice && bPlus) {
-      totalWin += findBPlusPrice?.amount * bPlus?.stake;
+  if (winner_colorplus) {
+    const findAPlusPrice = colorPlus?.find(
+      (a) => a.amount === parseFloat(winner_colorplus)
+    );
+    const c_p = payload?.find((p) => p.runner_name === "colorplus");
+    if (findAPlusPrice && c_p) {
+      totalWin += findAPlusPrice?.amount * c_p?.stake;
     }
   }
 

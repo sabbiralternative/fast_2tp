@@ -1,12 +1,4 @@
 import { useEffect } from "react";
-// import {
-//   playerOneFirstCard,
-//   playerOneSecondCard,
-//   playerOneThirdCard,
-//   playerTwoFirstCard,
-//   playerTwoSecondCard,
-//   playerTwoThirdCard,
-// } from "../../static";
 import { playCardSound } from "../../utils/sound";
 import SingleCard from "./SingleCard";
 
@@ -126,8 +118,6 @@ const Card = ({
               playerTwoFirstCard: prev.playerTwoFirstCard + 1,
               playerOneSecondCard: prev.playerOneSecondCard + 1,
               playerTwoSecondCard: prev.playerTwoSecondCard + 1,
-              playerOneThirdCard: prev.playerOneThirdCard + 1,
-              playerTwoThirdCard: prev.playerTwoThirdCard + 1,
             };
           });
         }, 400);

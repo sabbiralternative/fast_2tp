@@ -49,10 +49,11 @@ const Home = () => {
   const [animation, setAnimation] = useState([]);
   const initialWinCardState = {
     winner: null,
-    winner_aplus: null,
-    winner_bplus: null,
-    card_a: [],
-    card_b: [],
+    card_a: null,
+    card_b: null,
+    winner_baccarat: null,
+    winner_colorplus: null,
+    winner_method: null,
   };
   const [winCard, setWinCard] = useState(initialWinCardState);
 
@@ -133,7 +134,7 @@ const Home = () => {
       }, 300);
     }
   };
-  /* .... */
+
   const handleShuffle = () => {
     setShuffle(true);
 
@@ -160,33 +161,42 @@ const Home = () => {
       }
     }, 300);
   };
+
   const handleOrder = async (payload) => {
     let totalStake = 0;
     for (const bet of payload) {
       totalStake += bet?.stake;
     }
-    // console.log(payload);
-    const res = await addOrder(payload).unwrap();
-    console.log(res);
-    if (res?.success) {
-      const winner = res?.winner;
-      const winner_aplus = res?.winner_aplus;
-      const winner_bplus = res?.winner_bplus;
-      const card_a = res?.card_a;
-      const card_b = res?.card_b;
 
-      const historyObj = {
+    const res = await addOrder(payload).unwrap();
+
+    if (res?.success) {
+      const {
+        winner,
         card_a,
         card_b,
-        client_seed: res?.client_seed,
-        event_id: res?.event_id,
-        round_id: res?.round_id,
-        round_time: res?.round_time,
-        server_seed: res?.server_seed,
+        winner_baccarat,
+        winner_colorplus,
+        winner_method,
+        client_seed,
+        event_id,
+        round_id,
+        server_seed,
+        round_time,
+      } = res;
+
+      const historyObj = {
         winner,
-        winner_aplus,
-        winner_bplus,
-        winner_method: res?.winner_method,
+        card_a,
+        card_b,
+        winner_baccarat,
+        winner_colorplus,
+        winner_method,
+        client_seed,
+        event_id,
+        round_id,
+        server_seed,
+        round_time,
       };
       let betHistory = [];
 
@@ -197,8 +207,8 @@ const Home = () => {
 
       const calculateWin = calculateTotalWin(
         winner,
-        winner_aplus,
-        winner_bplus,
+        winner_baccarat,
+        winner_colorplus,
         payload
       );
 
@@ -224,15 +234,15 @@ const Home = () => {
               localStorage.setItem("betHistory", JSON.stringify(betHistory));
               setHistory(betHistory);
             },
-            isBetFast ? 500 : 3000
+            isBetFast ? 500 : 2000
           );
           setWinCard({
             winner,
-            winner_aplus,
-            winner_bplus,
             card_a,
             card_b,
-            winner_method: res?.winner_method,
+            winner_baccarat,
+            winner_method,
+            winner_colorplus,
           });
           setShowTotalWinAmount(true);
           setTotalWinAmount(calculateWin);
@@ -274,7 +284,7 @@ const Home = () => {
           setIsAnimationEnd(true);
         }
         setLoading(false);
-      }, 3000);
+      }, 2000);
       setCards(fiftyTwoCard);
 
       if (!shuffle) {
