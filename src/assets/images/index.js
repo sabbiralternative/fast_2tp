@@ -1,3 +1,3 @@
-import howToPlay from "../img/tp20_fast_1x.jpg";
+import howToPlay from "../img/2_card_teenpatti.jpg";
 
 export default { howToPlay };
