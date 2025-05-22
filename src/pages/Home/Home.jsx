@@ -69,11 +69,11 @@ const Home = () => {
   const [showCard, setShowCard] = useState(false);
 
   const initialState = {
-    playerA: { show: false, stake },
-    playerB: { show: false, stake },
+    A: { show: false, stake },
+    B: { show: false, stake },
     baccaratA: { show: false, stake },
     baccaratB: { show: false, stake },
-    colorPlus: { show: false, stake },
+    colorplus: { show: false, stake },
   };
   const [stakeState, setStakeState] = useState(initialState);
 
@@ -165,9 +165,9 @@ const Home = () => {
     for (const bet of payload) {
       totalStake += bet?.stake;
     }
-
+    // console.log(payload);
     const res = await addOrder(payload).unwrap();
-
+    console.log(res);
     if (res?.success) {
       const winner = res?.winner;
       const winner_aplus = res?.winner_aplus;
