@@ -1,12 +1,44 @@
+import { Settings } from "../api";
+
 export const clickSound = () => {
-  return new Audio("/sound/click.mp3").play();
+  const isMute = localStorage.getItem("isMute");
+  if (!isMute) {
+    return new Audio(`${Settings.baseUrl}/sound/click.mp3`).play();
+  }
 };
 export const playStakeChangeSound = () => {
-  return new Audio("/sound/pokerchip2.mp3").play();
+  const isMute = localStorage.getItem("isMute");
+  if (!isMute) {
+    return new Audio(`${Settings.baseUrl}/sound/pokerchip2.mp3`).play();
+  }
 };
 export const playShuffleSound = () => {
-  return new Audio("/sound/shuffle.mp3").play();
+  const isMute = localStorage.getItem("isMute");
+  if (!isMute) {
+    new Audio(`${Settings.baseUrl}/sound/shuffle.mp3`).play();
+  }
 };
 export const playUndoSound = () => {
-  return new Audio("/sound/undo.mp3").play();
+  const isMute = localStorage.getItem("isMute");
+  if (!isMute) {
+    return new Audio(`${Settings.baseUrl}/sound/undo.mp3`).play();
+  }
+};
+export const playWinSound = () => {
+  const isMute = localStorage.getItem("isMute");
+  if (!isMute) {
+    return new Audio(`${Settings.baseUrl}/sound/win.mp3`).play();
+  }
+};
+export const playCardSound = () => {
+  const isMute = localStorage.getItem("isMute");
+  if (!isMute) {
+    return new Audio(`${Settings.baseUrl}/sound/card.mp3`).play();
+  }
+};
+export const playCardBackSound = () => {
+  const isMute = localStorage.getItem("isMute");
+  if (!isMute) {
+    return new Audio(`${Settings.baseUrl}/sound/cardback.mp3`).play();
+  }
 };

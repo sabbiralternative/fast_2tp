@@ -1,22 +1,25 @@
-import { clickSound, playShuffleSound } from "../../utils/sound";
 import SelectChip from "./SelectChip";
 
 const Sidebar = ({
   handleClick,
-  showAnimationBtn,
-  setStakeState,
-  initialState,
   handleDoubleStake,
   handleUndoStake,
+  isPlaceStake,
+  totalPlaceBet,
+  isRepeatTheBet,
+  totalWinAmount,
+  showTotalWinAmount,
+  isAnimationEnd,
+  loading,
+  showCard,
+  winCard,
+  handleClear,
+  handleShuffle,
 }) => {
-  const handleClear = () => {
-    setStakeState(initialState);
-    clickSound();
-  };
   return (
     <div className="flex flex-col w-full max-w-md gap-2 p-2 mx-auto lg:h-full lg:overflow-y-auto">
       <div className="flex flex-col w-full lg:flex-col-reverse">
-        {showAnimationBtn ? (
+        {loading ? (
           <button
             id="step-placeBet"
             className="w-full p-3 font-medium text-black rounded bg-stakeGreen active:scale-[99%] disabled:opacity-50"
@@ -38,9 +41,9 @@ const Sidebar = ({
           </button>
         ) : (
           <button
+            disabled={!isPlaceStake || loading}
             onClick={() => {
               handleClick();
-              playShuffleSound();
             }}
             id="step-placeBet"
             className="w-full p-3 font-medium text-black rounded bg-stakeGreen active:scale-[99%] disabled:opacity-50"
@@ -50,7 +53,10 @@ const Sidebar = ({
         )}
 
         <div className="flex items-center justify-center w-full h-20 gap-6">
-          <button className="flex flex-col text-white/50 items-center justify-center gap-0.5 text-[10px] font-medium disabled:opacity-40">
+          <button
+            onClick={() => handleShuffle()}
+            className="flex flex-col text-white/50 items-center justify-center gap-0.5 text-[10px] font-medium disabled:opacity-40"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -68,6 +74,7 @@ const Sidebar = ({
             SHUFFLE
           </button>
           <button
+            disabled={!isPlaceStake || showTotalWinAmount || loading}
             onClick={handleUndoStake}
             className="flex flex-col text-white/50 items-center justify-center gap-0.5 text-[10px] font-medium disabled:opacity-50"
           >
@@ -89,6 +96,7 @@ const Sidebar = ({
           </button>
           <SelectChip />
           <button
+            disabled={!isPlaceStake && !winCard?.card && !showCard}
             onClick={handleClear}
             className="flex flex-col text-white/50 items-center justify-center gap-0.5 text-[10px] font-medium disabled:opacity-50"
           >
@@ -109,6 +117,7 @@ const Sidebar = ({
             CLEAR
           </button>
           <button
+            disabled={!isPlaceStake && !isRepeatTheBet}
             onClick={handleDoubleStake}
             className="flex flex-col text-white/50 items-center justify-center gap-0.5 text-[10px] font-medium disabled:opacity-50"
           >
@@ -131,12 +140,19 @@ const Sidebar = ({
                 clipRule="evenodd"
               />
             </svg>
-            DOUBLE
+            {isRepeatTheBet ? "Repeat" : "DOUBLE"}
           </button>
         </div>
         <div className="flex items-center justify-between w-full px-4 py-2 mb-2 text-sm font-medium rounded bg-black/20">
-          <span className="text-white/80">Total Bet</span>
-          <span className="font-mono text-yellow">0</span>
+          <span className="text-white/80">
+            {showTotalWinAmount && isAnimationEnd ? "Total Win" : "Total Bet"}
+          </span>
+          <span className="font-mono text-yellow">
+            {" "}
+            {showTotalWinAmount && isAnimationEnd
+              ? totalWinAmount
+              : totalPlaceBet}
+          </span>
         </div>
         <div
           className="flex flex-col items-center w-full gap-2 lg:flex-col-reverse"

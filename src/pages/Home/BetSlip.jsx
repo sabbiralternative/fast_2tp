@@ -1,43 +1,35 @@
 import { useSelector } from "react-redux";
-import { useOrderMutation } from "../../redux/features/events/events";
 import { useEffect } from "react";
-import { Status } from "../../const";
 import Stake from "../../components/shared/Stake/Stake";
 import { playStakeChangeSound } from "../../utils/sound";
+import { Winner } from "../../const";
 
 const BetSlip = ({
-  data,
+  setShowTotalWinAmount,
   setAnimation,
   setStakeState,
-  status,
-  initialState,
   stakeState,
-  setShowWinLossResult,
-  setTotalWinAmount,
-  setToast,
   animation,
   double,
+  winCard,
+  setIsAnimationEnd,
+  isAnimationEnd,
 }) => {
-  const [addOrder] = useOrderMutation();
   const { stake } = useSelector((state) => state.global);
 
-  // Generic function to update stake state
   const handleStakeChange = (payload) => {
+    setShowTotalWinAmount(false);
+    setIsAnimationEnd(false);
     playStakeChangeSound();
-    const { key, data, dataIndex, runnerIndex, type } = payload;
+    const { key } = payload;
     setAnimation([key]);
     const formatData = {
-      marketId: data?.[dataIndex]?.id,
-      roundId: data?.[dataIndex]?.roundId,
-      name: data?.[dataIndex]?.name,
-      eventId: data?.[dataIndex]?.eventId,
-      eventName: data?.[dataIndex]?.eventName,
-      selection_id: data?.[dataIndex]?.runners?.[runnerIndex]?.id,
-      runner_name: data?.[dataIndex]?.runners?.[runnerIndex]?.name,
-      isback: type === "back" ? 0 : 1,
-      event_id: data?.[dataIndex]?.eventId,
-      event_type_id: data?.[dataIndex]?.event_type_id,
-      price: data?.[dataIndex]?.runners?.[runnerIndex]?.[type]?.[0]?.price,
+      eventId: 30003,
+      eventName: "Fast Teen Patti T20",
+      isback: 0,
+      runner_name: payload.runner_name,
+      price: payload.price,
+      stake: payload.stake,
     };
     const timeout = setTimeout(() => {
       setAnimation([]);
@@ -52,20 +44,16 @@ const BetSlip = ({
         return {
           ...prev,
           [key]: {
-            roundId: formatData?.roundId,
-            name: formatData?.name,
-            eventId: formatData?.eventId,
-            eventName: formatData?.eventName,
+            eventId: formatData.eventId,
+            eventName: formatData.eventName,
+            isback: formatData.isback,
+            runner_name: formatData.runner_name,
+            price: formatData.price,
             show: true,
             animation: false,
             stake: prev[key].show
               ? prev[key].stake + prev[key].actionBy
               : prev[key].stake,
-            marketId: formatData?.marketId,
-            selection_id: formatData?.selection_id,
-            price: formatData?.price,
-            runner_name: formatData?.runner_name,
-            isback: formatData?.isback,
             serial: prev[key]?.serial ? prev[key]?.serial : maxSerial + 1,
             actionBy: stake,
             undo: [...(prev[key]?.undo || []), stake],
@@ -76,14 +64,6 @@ const BetSlip = ({
 
     return () => clearTimeout(timeout);
   };
-
-  // Reset state when status is OPEN
-  useEffect(() => {
-    if (status === Status.OPEN) {
-      setStakeState(initialState);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
 
   useEffect(() => {
     setStakeState((prev) => {
@@ -99,50 +79,6 @@ const BetSlip = ({
     });
   }, [stake]); // Runs when stake value changes
 
-  useEffect(() => {
-    const filterPlacedBet = Object.values(stakeState).filter((bet) => bet.show);
-    let payload = filterPlacedBet.map((bet) => ({
-      roundId: bet?.roundId,
-      name: bet?.name,
-      eventId: bet?.eventId,
-      eventName: bet?.eventName,
-      marketId: bet?.marketId,
-      selection_id: bet?.selection_id,
-      runner_name: bet?.runner_name,
-      stake: bet?.stake,
-      isback: bet?.isback,
-      price: bet?.price,
-    }));
-
-    if (status === Status.SUSPENDED && payload?.length > 0) {
-      const handleOrder = async () => {
-        const res = await addOrder(payload).unwrap();
-        payload = [];
-        if (res?.success) {
-          setShowWinLossResult(false);
-          setTotalWinAmount(null);
-          let totalBets = [];
-
-          for (let bet of filterPlacedBet) {
-            totalBets.push({
-              selection_id: bet.selection_id,
-              price: bet?.price,
-              eventId: bet?.eventId,
-              marketId: bet?.marketId,
-              name: bet?.name,
-              stake: bet?.stake,
-            });
-          }
-          localStorage.setItem("totalBetPlace", JSON.stringify(totalBets));
-
-          setToast(res?.Message);
-        }
-      };
-      handleOrder();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addOrder, status]);
-
   return (
     <div
       id="step-betOptions"
@@ -153,16 +89,18 @@ const BetSlip = ({
         onClick={() =>
           handleStakeChange({
             key: "playerA",
-            data,
-            dataIndex: 0,
-            runnerIndex: 0,
-            type: "back",
+            runner_name: "playerA",
+            price: 1.98,
           })
         }
-        className="relative flex  border w-full items-center rounded justify-center aspect-square 
+        className={`relative flex  border w-full items-center rounded justify-center aspect-square 
                 h-16 lg:h-20  
                 bg-gradient-to-t from-green/50 to-green/70
-            border-white/10 text-white/50 "
+               ${
+                 winCard?.winner === Winner.B && isAnimationEnd
+                   ? "border-stakeGreen text-stakeGreen"
+                   : "border-white/30 text-white/50"
+               }`}
         style={{ pointerEvents: "auto" }}
       >
         <span className="absolute font-medium  -translate-y-1/2 top-1/2  text-center lg:text-lg  ">
@@ -191,16 +129,14 @@ const BetSlip = ({
         onClick={() =>
           handleStakeChange({
             key: "colorPlus",
-            data,
-            dataIndex: 2,
-            runnerIndex: 0,
-            type: "back",
+            runner_name: "colorPlus",
+            price: null,
           })
         }
-        className="relative flex  border w-full items-center rounded justify-center aspect-square 
+        className={`relative flex  border w-full items-center rounded justify-center aspect-square 
                 row-span-2 h-full 
                 bg-gradient-to-t from-white/5 to-white/10
-            border-white/10 text-white/50 "
+            border-white/10 text-white/50`}
         style={{ pointerEvents: "auto" }}
       >
         <span className="absolute font-medium  -translate-y-1/2 top-1/2  text-center lg:text-lg  ">
@@ -270,10 +206,8 @@ const BetSlip = ({
         onClick={() =>
           handleStakeChange({
             key: "playerB",
-            data,
-            dataIndex: 0,
-            runnerIndex: 1,
-            type: "back",
+            runner_name: "playerB",
+            price: 1.98,
           })
         }
         className="relative flex  border w-full items-center rounded justify-center aspect-square 
@@ -308,10 +242,8 @@ const BetSlip = ({
         onClick={() =>
           handleStakeChange({
             key: "baccaratA",
-            data,
-            dataIndex: 1,
-            runnerIndex: 0,
-            type: "back",
+            runner_name: "baccaratA",
+            price: 2.05,
           })
         }
         className="relative flex  border w-full items-center rounded justify-center aspect-square 
@@ -346,10 +278,8 @@ const BetSlip = ({
         onClick={() =>
           handleStakeChange({
             key: "baccaratB",
-            data,
-            dataIndex: 1,
-            runnerIndex: 1,
-            type: "back",
+            runner_name: "baccaratB",
+            price: 2.05,
           })
         }
         className="relative flex  border w-full items-center rounded justify-center aspect-square 
