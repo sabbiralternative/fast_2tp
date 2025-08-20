@@ -62,7 +62,7 @@ const Home = () => {
   const { totalWinAmount, setTotalWinAmount, setShowTotalWin } =
     useContextState();
   const { stake } = useSelector((state) => state.global);
-  const { balance } = useSelector((state) => state.auth);
+  const { balance, token } = useSelector((state) => state.auth);
   const [cards, setCards] = useState(fiftyTwoCard);
 
   const [isAnimationEnd, setIsAnimationEnd] = useState(false);
@@ -379,7 +379,8 @@ const Home = () => {
     setSinglePNL(findPNLByRoundId);
   };
 
-  return (
+  const errorMessage = sessionStorage.getItem("errorMessage");
+  return token ? (
     <main className="flex flex-col items-center lg:h-screen bg-zinc-800">
       {showHowToPlay && <HowToPlay setShowHowToPlay={setShowHowToPlay} />}
       {showRecentPNL && <RecentPNL setShowRecentPNL={setShowRecentPNL} />}
@@ -664,6 +665,13 @@ const Home = () => {
         />
       </div>
     </main>
+  ) : (
+    <div className="h-screen flex flex-col items-center justify-center">
+      <div className="alert alert-danger text-center m-0" role="alert">
+        {errorMessage ||
+          "URL parameters are missing or invalid. Key: token | Value"}
+      </div>
+    </div>
   );
 };
 
