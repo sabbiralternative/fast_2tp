@@ -2,9 +2,12 @@ import { useSelector } from "react-redux";
 import { Settings } from "../../api";
 import { useContextState } from "../../context/ApiProvider";
 import { useEffect } from "react";
+import { useAuth } from "../../hooks/auth";
 
 const Header = () => {
-  const { totalWinAmount, showTotalWin, setShowTotalWin } = useContextState();
+  const { mutate: handleAuth } = useAuth();
+  const { totalWinAmount, showTotalWin, setShowTotalWin, isAnimationEnd } =
+    useContextState();
   const { balance, username, token } = useSelector((state) => state.auth);
   const handleOpenLobby = () => {
     const url = `${Settings.lobby}/${token}`;
@@ -13,13 +16,13 @@ const Header = () => {
 
   /* Close win amount */
   useEffect(() => {
-    if (showTotalWin) {
+    if ((showTotalWin, isAnimationEnd)) {
       const timeOut = setTimeout(() => {
         setShowTotalWin(false);
       }, 1000);
       return () => clearTimeout(timeOut);
     }
-  }, [setShowTotalWin, showTotalWin]);
+  }, [setShowTotalWin, showTotalWin, isAnimationEnd]);
   return (
     <div className="flex items-center justify-between w-full p-2 text-white shadow-xl bg-black/10">
       <div
@@ -130,18 +133,21 @@ const Header = () => {
                 <span>₹{balance}</span>
               </div>
               <div
-                className={`absolute right-0 z-50 text-sm font-semibold text-green-500  -bottom-6 ${
-                  showTotalWin && totalWinAmount
+                className={`absolute right-0 z-50 text-sm font-semibold  -bottom-6 ${
+                  showTotalWin && totalWinAmount && isAnimationEnd
                     ? "animate__animated animate__fadeOutUp animate__slow"
                     : "animate__animated animate__fadeOutDown animate__slow"
-                }`}
+                } ${totalWinAmount > 0 ? "text-green-500" : "text-red-500"}`}
               >
-                {totalWinAmount && showTotalWin ? `+${totalWinAmount}` : null}
+                {totalWinAmount && showTotalWin && isAnimationEnd
+                  ? `+${totalWinAmount}`
+                  : null}
               </div>
             </div>
           </span>
         </span>
         <svg
+          onClick={() => handleAuth(token)}
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="currentColor"

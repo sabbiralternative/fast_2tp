@@ -41,6 +41,12 @@ export const handleUndoStake = (setStakeState, stakeState) => {
         ) {
           updatedObj.stake -= updatedObj.undo.pop();
         } else {
+          if (updatedObj?.runner_name === "A") {
+            prev.B.lock = false;
+          }
+          if (updatedObj?.runner_name === "B") {
+            prev.A.lock = false;
+          }
           updatedObj.show = false;
           delete updatedObj.serial;
         }

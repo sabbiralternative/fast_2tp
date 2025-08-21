@@ -16,7 +16,6 @@ import {
 import { useContextState } from "../../context/ApiProvider";
 import { setBalance } from "../../redux/features/auth/authSlice";
 import toast from "react-hot-toast";
-import { calculateTotalWin } from "../../utils";
 import HowToPlay from "./HowToPlay";
 import RecentPNL from "./RecentPNL";
 import SinglePNL from "./SinglePNL";
@@ -57,15 +56,18 @@ const Home = () => {
   };
   const [winCard, setWinCard] = useState(initialWinCardState);
 
-  const [multiplier, setMultiplier] = useState(null);
   const [showTotalWinAmount, setShowTotalWinAmount] = useState(false);
-  const { totalWinAmount, setTotalWinAmount, setShowTotalWin } =
-    useContextState();
+  const {
+    totalWinAmount,
+    setTotalWinAmount,
+    setShowTotalWin,
+    isAnimationEnd,
+    setIsAnimationEnd,
+  } = useContextState();
   const { stake } = useSelector((state) => state.global);
   const { balance, token } = useSelector((state) => state.auth);
   const [cards, setCards] = useState(fiftyTwoCard);
 
-  const [isAnimationEnd, setIsAnimationEnd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showCard, setShowCard] = useState(false);
 
@@ -91,47 +93,27 @@ const Home = () => {
     }
   });
 
-  const handleClick = () => {
-    setLoading(true);
-    setIsAnimationEnd(false);
+  const handleClick = async () => {
+    if (balance > 0) {
+      setTotalWinAmount(null);
+      const filterPlacedBet = Object.values(stakeState).filter(
+        (bet) => bet.show
+      );
 
-    const filterPlacedBet = Object.values(stakeState).filter((bet) => bet.show);
+      let payload = filterPlacedBet.map((bet) => ({
+        eventId: bet?.eventId,
+        eventName: bet?.eventName,
+        isback: 0,
+        price: bet?.price,
+        runner_name: bet?.runner_name,
+        stake: bet?.stake,
+      }));
 
-    let payload = filterPlacedBet.map((bet) => ({
-      eventId: bet?.eventId,
-      eventName: bet?.eventName,
-      isback: 0,
-      price: bet?.price,
-      runner_name: bet?.runner_name,
-      stake: bet?.stake,
-    }));
-    const isAllCardValueOne = Object.values(styleIndex).map((val) => val === 1);
-    if (isAllCardValueOne) {
-      playCardBackSound();
-      setStyleIndex(initialStyleIndex);
-      if (!isBetFast) {
-        setTimeout(() => {
-          setShowCard(false);
-        }, 200);
+      if (payload?.length > 0) {
+        await handleOrder(payload);
       }
-    }
-
-    if (payload?.length > 0) {
-      handleOrder(payload);
-    }
-
-    if (!isBetFast) {
-      let steps = 0;
-      const totalSteps = 6;
-
-      const interval = setInterval(() => {
-        if (steps <= totalSteps) {
-          updateCards(steps);
-          steps++;
-        } else {
-          clearInterval(interval);
-        }
-      }, 300);
+    } else {
+      toast.error("Insufficient Balance");
     }
   };
 
@@ -171,6 +153,33 @@ const Home = () => {
     const res = await addOrder(payload).unwrap();
 
     if (res?.success) {
+      setLoading(true);
+      setIsAnimationEnd(false);
+      const isAllCardValueOne = Object.values(styleIndex).map(
+        (val) => val === 1
+      );
+      if (isAllCardValueOne) {
+        playCardBackSound();
+        setStyleIndex(initialStyleIndex);
+        if (!isBetFast) {
+          setTimeout(() => {
+            setShowCard(false);
+          }, 200);
+        }
+      }
+      if (!isBetFast) {
+        let steps = 0;
+        const totalSteps = 6;
+
+        const interval = setInterval(() => {
+          if (steps <= totalSteps) {
+            updateCards(steps);
+            steps++;
+          } else {
+            clearInterval(interval);
+          }
+        }, 300);
+      }
       const {
         winner,
         card_a,
@@ -183,7 +192,7 @@ const Home = () => {
         round_id,
         server_seed,
         round_time,
-      } = res;
+      } = res.result;
 
       const historyObj = {
         winner,
@@ -205,40 +214,21 @@ const Home = () => {
         betHistory = JSON.parse(storedBetHistory);
       }
 
-      const calculateWin = calculateTotalWin(
-        winner,
-        winner_baccarat,
-        winner_colorplus,
-        payload
-      );
-
       setTimeout(
         () => {
-          setTimeout(
-            () => {
-              if (calculateWin > 0) {
-                dispatch(setBalance(calculateWin + balance));
-                betHistory.unshift({
-                  ...historyObj,
-                  result: "win",
-                });
-                playWinSound();
-                setShowTotalWin(true);
-              } else {
-                dispatch(setBalance(balance - totalStake));
-                betHistory.unshift({
-                  ...historyObj,
-                  result: "loss",
-                });
-              }
-              localStorage.setItem(
-                "fast_2tp_betHistory",
-                JSON.stringify(betHistory)
-              );
-              setHistory(betHistory);
-            },
-            isBetFast ? 500 : 2000
-          );
+          if (res?.result?.pnl > 0) {
+            dispatch(setBalance(res?.result?.pnl + balance));
+            betHistory.unshift({
+              ...historyObj,
+              result: "win",
+            });
+          } else {
+            dispatch(setBalance(balance - totalStake));
+            betHistory.unshift({
+              ...historyObj,
+              result: "loss",
+            });
+          }
           setWinCard({
             winner,
             card_a,
@@ -247,12 +237,18 @@ const Home = () => {
             winner_method,
             winner_colorplus,
           });
-          setShowTotalWinAmount(true);
-          setTotalWinAmount(calculateWin);
-          setMultiplier((calculateWin / totalPlaceBet).toFixed(2));
           payload = [];
+          setShowTotalWin(res?.result?.pnl !== 0);
+          setShowTotalWinAmount(true);
+          setTotalWinAmount(res?.result?.pnl !== 0 ? res?.result?.pnl : null);
+
+          localStorage.setItem(
+            "fast_2tp_betHistory",
+            JSON.stringify(betHistory)
+          );
+          setHistory(betHistory);
         },
-        isBetFast ? 0 : 2000
+        isBetFast ? 500 : 2000
       );
 
       if (isBetFast) {
@@ -269,7 +265,7 @@ const Home = () => {
         }, 1000);
       }
     } else {
-      toast.success(res?.error?.description[0]?.message);
+      toast.error(res?.result?.message);
     }
   };
 
@@ -363,6 +359,12 @@ const Home = () => {
     setIsMute(storedMute);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (totalWinAmount > 0 && isAnimationEnd) {
+      playWinSound();
+    }
+  }, [totalWinAmount, isAnimationEnd]);
 
   const handleMuteSetting = () => {
     if (isMute) {
@@ -540,7 +542,6 @@ const Home = () => {
               shuffle={shuffle}
               isBetFast={isBetFast}
               totalWinAmount={totalWinAmount}
-              multiplier={multiplier}
               isAnimationEnd={isAnimationEnd}
               winCard={winCard}
               setStyleIndex={setStyleIndex}
