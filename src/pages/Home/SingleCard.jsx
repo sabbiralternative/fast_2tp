@@ -18,6 +18,9 @@ const SingleCard = ({ style, card, highlight, player, winCard }) => {
     if (removeFirstCharacter == "11") {
       return "J";
     }
+    if (removeFirstCharacter == "1") {
+      return "A";
+    }
     return removeFirstCharacter;
   };
 
