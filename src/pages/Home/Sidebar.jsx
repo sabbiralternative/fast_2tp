@@ -154,7 +154,7 @@ const Sidebar = ({
               : totalPlaceBet}
           </span>
         </div>
-        <div
+        {/* <div
           className="flex flex-col items-center w-full gap-2 lg:flex-col-reverse"
           style={{ pointerEvents: "auto" }}
         >
@@ -166,7 +166,7 @@ const Sidebar = ({
               Auto
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
       {/* <div
         id="step-gameParticipants"

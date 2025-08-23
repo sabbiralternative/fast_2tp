@@ -92,7 +92,7 @@ const BetSlip = ({
   return (
     <div
       id="step-betOptions"
-      className="grid grid-cols-3 gap-0.5 justify-items-center justify-center  px-6 mx-auto max-w-md w-full p-2 lg:pb-12 "
+      className="grid grid-cols-2 gap-0.5 justify-items-center justify-center  px-6 mx-auto max-w-md w-full p-2 lg:pb-12 "
       style={{ pointerEvents: loading ? "none" : "auto" }}
     >
       <div
@@ -129,7 +129,7 @@ const BetSlip = ({
           stakeState={stakeState}
         />
       </div>
-      <div
+      {/* <div
         onClick={() =>
           handleStakeChange({
             key: "colorplus",
@@ -235,7 +235,7 @@ const BetSlip = ({
           stake={stake}
           stakeState={stakeState}
         />
-      </div>
+      </div> */}
       <div
         onClick={() =>
           handleStakeChange({
@@ -270,7 +270,7 @@ const BetSlip = ({
           stakeState={stakeState}
         />
       </div>
-      <div
+      {/* <div
         onClick={() =>
           handleStakeChange({
             key: "baccaratA",
@@ -300,8 +300,8 @@ const BetSlip = ({
           stake={stake}
           stakeState={stakeState}
         />
-      </div>
-      <div
+      </div> */}
+      {/* <div
         onClick={() =>
           handleStakeChange({
             key: "baccaratB",
@@ -331,7 +331,7 @@ const BetSlip = ({
           stake={stake}
           stakeState={stakeState}
         />
-      </div>
+      </div> */}
     </div>
   );
 };
